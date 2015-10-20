@@ -77,10 +77,12 @@ namespace VSBuildMonitor
             }
          }
          int i;
+         bool atLeastOneError = false;
          for (i = 0; i < host.finishedBuilds.Count; i++)
          {
             int l = graphicsObj.MeasureString(host.finishedBuilds[i].name, Font).ToSize().Width;
             t = host.finishedBuilds[i].end;
+            atLeastOneError = atLeastOneError || !host.finishedBuilds[i].success;
             if (t > maxTick)
             {
                maxTick = t;
@@ -168,6 +170,9 @@ namespace VSBuildMonitor
          }
          graphicsObj.DrawLine(grid, new Point(maxStringLength, 0), new Point(maxStringLength, i * rowHeight));
          graphicsObj.DrawLine(blackPen, new Point(0, i * rowHeight), new Point(DisplayRectangle.Size.Width, i * rowHeight));
+         if (host.allProjectsCount > 0)
+           graphicsObj.DrawLine(new Pen(atLeastOneError ? Color.Red : Color.Green, 1), new Point(0, (i + 1) * rowHeight - 1),
+             new Point(DisplayRectangle.Size.Width * host.finishedBuilds.Count / host.allProjectsCount, (i + 1) * rowHeight - 1));
          DateTime dt = new DateTime(0);
          graphicsObj.DrawString(dt.ToString(Connect.timeFormat), Font, blackBrush, maxStringLength, i * rowHeight);
 
